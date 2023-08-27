@@ -1,11 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
-
-export interface IUser extends Document {
-  username: string;
-  totalWins: number;
-  totalLosses: number;
-  balance: number;
-}
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema<IUser>({
   username: String,
