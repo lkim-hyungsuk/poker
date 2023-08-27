@@ -1,5 +1,4 @@
 import { User } from "./models/User";
-// import { IUser } from "../types/index";
 
 const resolvers = {
   Query: {
