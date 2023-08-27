@@ -1,7 +1,6 @@
 import { IGame, IHand } from "./models";
-import { User, IUser } from "./models/User";
+import { User } from "./models/User";
 
-// resolvers.ts
 const resolvers = {
   Query: {
     getUsers: async (): Promise<IUser[]> => {
