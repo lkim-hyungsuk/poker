@@ -15,7 +15,9 @@ function App() {
     fetchData();
   }, []);
 
-  return <div className="App">Here is the fetched data: {data?.message}</div>;
+  return (
+    <div className="App__title">Here is the fetched data: {data?.message}</div>
+  );
 }
 
 export default App;
