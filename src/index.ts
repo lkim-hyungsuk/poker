@@ -5,6 +5,7 @@ import { typeDefs } from "./schema";
 import resolvers from "./resolvers";
 import mongoose from "mongoose";
 import path from "path";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,12 +19,18 @@ const startServer = async () => {
   await mongoose.connect(process.env.MONGODB_URI as string);
   console.log("Connected to MongoDB! (◠‿◠✿)");
 
+  app.use(cors());
+
   // Serve static files (including index.html) from the 'public' folder
-  app.use(express.static(path.join(__dirname, "public")));
+  app.use(express.static(path.join(__dirname, "client/build")));
 
   // Handle requests for the root URL
   app.get("/", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "client", "index.html"));
+    res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  });
+
+  app.get("/testApi", (req: Request, res: Response) => {
+    res.send({ message: "Hello from the API!" });
   });
 
   await server.start();
