@@ -10,7 +10,7 @@ declare global {
 
   interface IGame extends mongoose.Document {
     players: mongoose.Types.ObjectId[]; // References to user IDs
-    hands: mongoose.Types.ObjectId[]; // References to hand IDs
+    hands: mongoose.Types.ObjectId[]; // Each game has 1 or more hands until there is only one player
   }
 
   interface IHand extends mongoose.Document {
