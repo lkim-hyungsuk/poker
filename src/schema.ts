@@ -9,6 +9,11 @@ export const typeDefs = gql`
     balance: Int!
   }
 
+  type DeleteResult {
+    acknowledged: Boolean!
+    deletedCount: Int!
+  }
+
   # schema.graphql
   # type Game {
   #   id: ID!
@@ -39,6 +44,6 @@ export const typeDefs = gql`
   type Mutation {
     # createGame(playerIds: [ID!]!): Game!
     createUser(username: String!): User
-    # More mutations
+    deleteAllUsers: DeleteResult
   }
 `;
