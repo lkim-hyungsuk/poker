@@ -6,6 +6,8 @@ import resolvers from "./resolvers";
 import mongoose from "mongoose";
 import path from "path";
 import cors from "cors";
+import WebSocket from "ws";
+import http from "http";
 
 dotenv.config();
 
@@ -36,7 +38,19 @@ const startServer = async () => {
   await server.start();
   server.applyMiddleware({ app });
 
-  app.listen({ port: 4000 }, (): void => {
+  // get the HTTP server and pass it to WebSocket
+  // Create a WebSocket server
+  const httpServer = http.createServer(app);
+  const wss = new WebSocket.Server({ server: httpServer });
+
+  wss.on("connection", (ws) => {
+    ws.on("message", (message) => {
+      console.log(`----------------------Received message => ${message}`);
+    });
+    ws.send("Hello! Welcome to the chat.");
+  });
+
+  httpServer.listen({ port: 4000 }, (): void => {
     console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
   });
 };
