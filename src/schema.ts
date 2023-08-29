@@ -38,7 +38,7 @@ export const typeDefs = gql`
 
   type Query {
     # games: [Game!]!
-    getUsers(id: ID!): [User!]!
+    getUsers: [User!]!
   }
 
   type Mutation {

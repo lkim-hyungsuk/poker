@@ -1,16 +1,36 @@
 import { useEffect, useState } from "react";
+import { useMutation, gql } from "@apollo/client";
+
+const CREATE_USER = gql`
+  mutation CreateUser($username: String!) {
+    createUser(username: $username) {
+      username
+      balance
+      totalWins
+      totalLosses
+    }
+  }
+`;
 
 function App() {
-  const [data, setData] = useState({
-    message: "Loading...",
-  });
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  const [username, setUsername] = useState("lenny");
 
+  const handleCreateUser = () => {
+    createUser({ variables: { username } })
+      .then((response) => {
+        console.log("User created:", response.data);
+      })
+      .catch((err) => {
+        console.log("Error:", err);
+      });
+  };
   // Testing the hookup with Express server
   useEffect(() => {
     async function fetchData() {
       const response = await fetch("http://localhost:4000/testApi");
       const data = await response.json();
-      setData(data);
+      console.log("data from server:", data);
     }
     fetchData();
   }, []);
@@ -32,7 +52,16 @@ function App() {
 
   return (
     <div className="App__title">
-      Here is the fetched data: <b>{data?.message}</b>
+      <b>Create a new user</b>
+      <div>
+        <input
+          type="text"
+          placeholder="Enter username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <button onClick={handleCreateUser}>Create User</button>
+      </div>
     </div>
   );
 }
