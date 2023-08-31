@@ -43,12 +43,45 @@ const startServer = async () => {
   // Create a WebSocket server
   const httpServer = http.createServer(app);
   const wss = new WebSocket.Server({ server: httpServer });
+  const chatRooms: Record<string, WebSocketWithRoom[]> = {};
 
-  wss.on("connection", (ws) => {
-    ws.on("message", (message) => {
+  // Storing the room counter in memory is not ideal, but it works for now
+  let roomCounter = 0;
+  function generateUniqueRoomID(): string {
+    roomCounter += 1;
+    return `Room${roomCounter}`;
+  }
+
+  wss.on("connection", (ws: WebSocketWithRoom) => {
+    ws.on("message", (message: WebSocket.Data) => {
       console.log(`----------------------Received message => ${message}`);
+      const messageString = message.toString();
+      const parsedMessage: ParsedMessage = JSON.parse(messageString);
+
+      if (parsedMessage.type === "join") {
+        const room: string = parsedMessage.room || generateUniqueRoomID();
+        ws.room = room;
+
+        if (!chatRooms[room]) {
+          chatRooms[room] = [];
+        }
+
+        chatRooms[room].push(ws);
+        console.log(`----------------------Added ${ws} to room ${room}`);
+        ws.send(JSON.stringify({ type: "joined", room }));
+      } else if (parsedMessage.type === "message") {
+        // Send a message to all participants in the room
+        const room: string = parsedMessage.room;
+        const text: string = parsedMessage.text;
+        if (chatRooms[room]) {
+          chatRooms[room].forEach((client: WebSocketWithRoom) => {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({ type: "message", text }));
+            }
+          });
+        }
+      }
     });
-    ws.send("Hello! Welcome to the chat.");
   });
 
   httpServer.listen({ port: 4000 }, (): void => {

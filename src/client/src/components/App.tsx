@@ -14,6 +14,7 @@ const CREATE_USER = gql`
 
 function App() {
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  const [room, setRoom] = useState<string | undefined>();
   const [username, setUsername] = useState("lenny");
 
   const handleCreateUser = () => {
@@ -21,8 +22,6 @@ function App() {
       .then((response) => {
         console.log("User created:", response.data);
         console.log("Joining the chat...");
-        
-        
       })
       .catch((err) => {
         console.log("Error:", err);
@@ -49,14 +48,22 @@ function App() {
       };
       const ws = new WebSocket("ws://localhost:4000");
       ws.onopen = () => {
-        console.log("connected to websocket");
+        console.log("WEBSOCKET CONNECTED");
+
         const message: Message = {
           type: "join",
         };
         ws.send(JSON.stringify(message));
       };
       ws.onmessage = (message) => {
-        console.log("received message: ", message);
+        console.log("Server => Client: ", message);
+        const parsedMessage: Message = JSON.parse(message.data);
+
+        // show which room you are assigned to
+        if (parsedMessage.type === "joined") {
+          console.log("Joined room:", parsedMessage.room);
+          setRoom(parsedMessage.room);
+        }
       };
     }
     connectToWs();
@@ -73,14 +80,8 @@ function App() {
           onChange={(e) => setUsername(e.target.value)}
         />
         <button onClick={handleCreateUser}>Create User</button>
-        <input
-          type="text"
-          placeholder="Enter username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <button onClick={handleCreateUser}>Create User</button>
       </div>
+      <h4>Joined Room: {room}</h4>
     </div>
   );
 }
