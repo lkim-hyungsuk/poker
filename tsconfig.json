@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2019",
-    "module": "CommonJS",
+    "module": "Node16",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true

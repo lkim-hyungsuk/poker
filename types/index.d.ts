@@ -1,4 +1,5 @@
 import mongoose, { Document } from "mongoose";
+import WebSocket from "ws";
 
 declare global {
   interface IUser extends Document {
@@ -17,5 +18,15 @@ declare global {
     gameId: mongoose.Types.ObjectId; // Reference to game ID
     cards: string[]; // Cards dealt in this hand
     bets: mongoose.Types.ObjectId[]; // References to bet IDs
+  }
+
+  type ParsedMessage = {
+    type: string;
+    room: string;
+    text: string;
+  };
+
+  interface WebSocketWithRoom extends WebSocket {
+    room?: string;
   }
 }
